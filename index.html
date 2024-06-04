@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: antiquewhite;
+        }
+        table {
+            margin: 0 auto;
+            background-color: white;
+            border: 2px solid black;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 10px;
+        }
+        .contenedor-contraseña {
+            display: flex;
+            align-items: center;
+        }
+        .contenedor-contraseña input[type="password"],
+        .contenedor-contraseña input[type="text"] {
+            flex: 1;
+        }
+        .alternar-contraseña {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .alternar-contraseña img {
+            width: 24px; /* Ajusta el tamaño de la imagen según sea necesario */
+            height: 24px;
+        }
+        button {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body onload="inicializarPagina()">
+    <table>
+        <form action="login.php" method="post">
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <h1>Login</h1>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="usuario">Usuario:</label>
+                </td>
+                <td>
+                    <input type="text" id="usuario" name="usuario" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="contraseña">Contraseña:</label>
+                </td>
+                <td>
+                    <div class="contenedor-contraseña">
+                        <input type="password" id="contraseña" name="contraseña" required>
+                        <span class="alternar-contraseña" onclick="alternarContraseña()">
+                            <img src="img/001-visibilidad.png" alt="Mostrar contraseña" id="iconoAlternar">
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="checkbox" id="recordar" name="recordar"> <label for="recordar">Recuérdame</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button id="btn_enviar" type="submit">Entrar</button>
+                </td>
+            </tr>
+        </form>
+    </table>
+
+    <script>
+        function inicializarPagina() {
+            const iconoAlternar = document.getElementById('iconoAlternar');
+            iconoAlternar.src = 'img/001-visibilidad.png';
+            iconoAlternar.alt = 'Mostrar contraseña';
+        }
+
+        function alternarContraseña() {
+            const entradaContraseña = document.getElementById('contraseña');
+            const iconoAlternar = document.getElementById('iconoAlternar');
+            if (entradaContraseña.type === 'password') {
+                entradaContraseña.type = 'text';
+                iconoAlternar.src = 'img/002-ojo.png'; // Cambia el icono a un ojo cerrado
+                iconoAlternar.alt = 'Ocultar contraseña';
+            } else {
+                entradaContraseña.type = 'password';
+                iconoAlternar.src = 'img/001-visibilidad.png'; // Cambia el icono a un ojo abierto
+                iconoAlternar.alt = 'Mostrar contraseña';
+            }
+        }
+    </script>
+</body>
+</html>
