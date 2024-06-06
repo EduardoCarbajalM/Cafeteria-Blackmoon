@@ -13,11 +13,14 @@
             margin: 0;
             background-color: antiquewhite;
         }
-        table {
-            margin: 0 auto;
+        form {
             background-color: white;
+            padding: 20px;
             border: 2px solid black;
-            border-collapse: collapse;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
         }
         td {
             padding: 10px;
@@ -35,34 +38,32 @@
             margin-left: 5px;
         }
         .alternar-contraseña img {
-            width: 24px; /* Ajusta el tamaño de la imagen según sea necesario */
+            width: 24px;
             height: 24px;
         }
         button {
             background-color: lightblue;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body onload="inicializarPagina()">
-    <table>
-        <form action="login.php" method="post">
+    <form action="login.php" method="post">
+        <table>
             <tr>
                 <td colspan="2" style="text-align: center;">
                     <h1>Login</h1>
                 </td>
             </tr>
             <tr>
-                <td>
-                    <label for="usuario">Usuario:</label>
-                </td>
-                <td>
-                    <input type="text" id="usuario" name="usuario" required>
-                </td>
+                <td><label for="usuario">Usuario:</label></td>
+                <td><input type="text" id="usuario" name="usuario" required></td>
             </tr>
             <tr>
-                <td>
-                    <label for="contraseña">Contraseña:</label>
-                </td>
+                <td><label for="contraseña">Contraseña:</label></td>
                 <td>
                     <div class="contenedor-contraseña">
                         <input type="password" id="contraseña" name="contraseña" required>
@@ -80,10 +81,11 @@
             <tr>
                 <td colspan="2" style="text-align: center;">
                     <button id="btn_enviar" type="submit">Entrar</button>
+                    <p>No tienes una cuenta? <a href="registro.html">Registrate aquí</a></p>
                 </td>
             </tr>
-        </form>
-    </table>
+        </table>
+    </form>
 
     <script>
         function inicializarPagina() {
@@ -97,11 +99,11 @@
             const iconoAlternar = document.getElementById('iconoAlternar');
             if (entradaContraseña.type === 'password') {
                 entradaContraseña.type = 'text';
-                iconoAlternar.src = 'img/002-ojo.png'; // Cambia el icono a un ojo cerrado
+                iconoAlternar.src = 'img/002-ojo.png';
                 iconoAlternar.alt = 'Ocultar contraseña';
             } else {
                 entradaContraseña.type = 'password';
-                iconoAlternar.src = 'img/001-visibilidad.png'; // Cambia el icono a un ojo abierto
+                iconoAlternar.src = 'img/001-visibilidad.png';
                 iconoAlternar.alt = 'Mostrar contraseña';
             }
         }

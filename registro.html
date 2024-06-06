@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: antiquewhite;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+        }
+        td {
+            padding: 10px;
+        }
+        .contenedor-contraseña {
+            display: flex;
+            align-items: center;
+        }
+        .contenedor-contraseña input[type="password"],
+        .contenedor-contraseña input[type="text"] {
+            flex: 1;
+        }
+        .alternar-contraseña {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .alternar-contraseña img {
+            width: 24px;
+            height: 24px;
+        }
+        button {
+            background-color: lightblue;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <form id="registroForm" action="agregar_usuario.php" method="post" onsubmit="return validarFormulario()">
+        <table>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <h1>Registro</h1>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="correo">Correo Electrónico:</label></td>
+                <td><input type="email" id="correo" name="correo" required></td>
+            </tr>
+            <tr>
+                <td><label for="usuario">Usuario:</label></td>
+                <td><input type="text" id="usuario" name="usuario" required></td>
+            </tr>
+            <tr>
+                <td><label for="contraseña">Escoge una contraseña:</label></td>
+                <td>
+                    <div class="contenedor-contraseña">
+                        <input type="password" id="contraseña" name="contraseña" required>
+                        <span class="alternar-contraseña" onclick="alternarContraseña()">
+                            <img id="iconoAlternar" src="img/001-visibilidad.png" alt="Mostrar contraseña">
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="confirmar_contraseña">Vuelve a ingresar la contraseña:</label></td>
+                <td>
+                    <div class="contenedor-contraseña">
+                        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
+                        <span class="alternar-contraseña" onclick="alternarContraseñaConfirmacion()">
+                            <img id="iconoAlternarConfirmacion" src="img/001-visibilidad.png" alt="Mostrar contraseña">
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button id="btn_enviar" type="submit">Registrarme</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <p>¿Ya tienes una cuenta? <a href="index.html">Ingresa aquí</a></p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <p class="error" id="errorContraseña">Las contraseñas no coinciden.</p>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <script>
+        function alternarContraseña() {
+            const entradaContraseña = document.getElementById('contraseña');
+            const iconoAlternar = document.getElementById('iconoAlternar');
+            if (entradaContraseña.type === 'password') {
+                entradaContraseña.type = 'text';
+                iconoAlternar.src = 'img/002-ojo.png';
+                iconoAlternar.alt = 'Ocultar contraseña';
+            } else {
+                entradaContraseña.type = 'password';
+                iconoAlternar.src = 'img/001-visibilidad.png';
+                iconoAlternar.alt = 'Mostrar contraseña';
+            }
+        }
+
+        function alternarContraseñaConfirmacion() {
+            const entradaContraseña = document.getElementById('confirmar_contraseña');
+            const iconoAlternar = document.getElementById('iconoAlternarConfirmacion');
+            if (entradaContraseña.type === 'password') {
+                entradaContraseña.type = 'text';
+                iconoAlternar.src = 'img/002-ojo.png';
+                iconoAlternar.alt = 'Ocultar contraseña';
+            } else {
+                entradaContraseña.type = 'password';
+                iconoAlternar.src = 'img/001-visibilidad.png';
+                iconoAlternar.alt = 'Mostrar contraseña';
+            }
+        }
+
+        function validarFormulario() {
+            const contraseña = document.getElementById('contraseña').value;
+            const confirmarContraseña = document.getElementById('confirmar_contraseña').value;
+            const errorContraseña = document.getElementById('errorContraseña');
+
+            if (contraseña !== confirmarContraseña) {
+                errorContraseña.style.display = 'block';
+                return false;
+            } else {
+                errorContraseña.style.display = 'none';
+                return true;
+            }
+        }
+    </script>
+</body>
+</html>
