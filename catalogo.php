@@ -1,16 +1,6 @@
 <?php
 include 'conexion_bd.php';
 
-if (!isset($_SESSION['usuario'])) {
-    if (isset($_COOKIE['usuario'])) {
-        // Si existe una cookie, reiniciar la sesión
-        $_SESSION['usuario'] = $_COOKIE['usuario'];
-    } else {
-        header('Location: index.html');
-        exit();
-    }
-}
-
 $sql = "SELECT * FROM usuarios";
 $result = $conn->query($sql);
 
@@ -44,36 +34,13 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: antiquewhite;
-        }
-        table {
-            margin: 0 auto;
-            background-color: white;
-            border: 2px solid black;
-            border-collapse: collapse;
-        }
-        td {
-            padding: 10px;
-        }
-        button {
-            background-color: lightblue;
-        }
-        .top-container {
-            margin-bottom: 10px;
-        }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
         .dropdown-content {
             display: none;
             position: absolute;
@@ -87,121 +54,101 @@ $conn->close();
             padding: 12px 16px;
             text-decoration: none;
             display: block;
-            width: 100%;
             background: none;
             border: none;
+            width: 100%;
             text-align: left;
         }
-        .dropdown-content button:hover {
-            background-color: #f1f1f1;
-        }
-        .show {
-            display: block;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+        .dropdown-content button:hover {background-color: #f1f1f1;}
+        .show {display: block;}
     </style>
 </head>
 <body>
-    <button id="addRowBtn">+</button>
-    
-    <table id="myTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Contraseña</th>
-                <th>Correo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($data as $row): ?>
+    <div class="container mt-5">
+        <table id="myTable" class="display">
+            <thead>
                 <tr>
-                    <?php foreach ($row as $cell): ?>
-                        <td><?php echo $cell; ?></td>
-                    <?php endforeach; ?>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Contraseña</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($data as $row): ?>
+                    <tr>
+                        <?php foreach ($row as $cell): ?>
+                            <td><?php echo $cell; ?></td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
 
-    <!-- Modal -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Agregar Nuevo Campo</h2>
-            <form id="addRowForm">
-                <label for="id">ID:</label><br>
-                <input type="text" id="id" name="id"><br>
-                <label for="name">Nombre:</label><br>
-                <input type="text" id="name" name="name"><br>
-                <label for="password">Contraseña:</label><br>
-                <input type="text" id="password" name="password"><br>
-                <label for="email">Correo:</label><br>
-                <input type="text" id="email" name="email"><br><br>
-                <input type="button" id="saveRowBtn" value="Guardar">
-            </form>
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Nuevo Campo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addRowForm">
+                            <div class="form-group">
+                                <label for="id">ID:</label>
+                                <input type="text" class="form-control" id="id" name="id">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Nombre:</label>
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Contraseña:</label>
+                                <input type="text" class="form-control" id="password" name="password">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Correo:</label>
+                                <input type="text" class="form-control" id="email" name="email">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="saveRowBtn">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <button id="addRowBtn" class="btn btn-success mt-3">Agregar Nuevo Campo</button>
     </div>
 
     <!-- Scripts de JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
             var tabla = $('#myTable').DataTable();
 
-            var modal = document.getElementById("myModal");
-            var btn = document.getElementById("addRowBtn");
-            var span = document.getElementsByClassName("close")[0];
-            var guardarBtn = document.getElementById("saveRowBtn");
+            var modal = $('#myModal');
+            var btn = $('#addRowBtn');
+            var guardarBtn = $('#saveRowBtn');
 
-            btn.onclick = function() {
-                modal.style.display = "block";
-            }
+            btn.on('click', function() {
+                modal.modal('show');
+            });
 
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
+            $('.close').on('click', function() {
+                modal.modal('hide');
+            });
 
-            window.onclick = function(evento) {
-                if (evento.target == modal) {
-                    modal.style.display = "none";
+            $(window).on('click', function(event) {
+                if ($(event.target).is(modal)) {
+                    modal.modal('hide');
                 }
-            }
+            });
 
-            guardarBtn.onclick = function() {
+            guardarBtn.on('click', function() {
                 var id = $('#id').val();
                 var nombre = $('#name').val();
                 var contraseña = $('#password').val();
@@ -222,11 +169,23 @@ $conn->close();
                     '</div>'
                 ]).draw(false);
 
-                modal.style.display = "none";
+                modal.modal('hide');
                 $('#addRowForm')[0].reset();
-            }
-        });
+            });
 
+            $('#myTable tbody').on('click', 'button', function () {
+                var action = $(this).text();
+                var data = tabla.row($(this).parents('tr')).data();
+
+                if (action === 'Ver') {
+                    btn_ver(data);
+                } else if (action === 'Editar') {
+                    btn_editar(data);
+                } else if (action === 'Eliminar') {
+                    btn_eliminar(data);
+                }
+            });
+        });
 
         function btn_acciones(boton) {
             var contenidoDropdown = boton.nextElementSibling;
@@ -240,17 +199,34 @@ $conn->close();
         }
 
         function btn_ver() {
-            alert('Ver');
+            Swal.fire('Ver');
             cerrarDropdowns();
         }
 
         function btn_editar() {
-            alert('Editar');
+            Swal.fire('Editar');
             cerrarDropdowns();
         }
 
         function btn_eliminar() {
-            alert('Eliminar');
+            Swal.fire({
+                title: "Confirmación",
+                text: "¿Estás seguro de eliminar?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Aceptar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: "Eliminación exitosa",
+                        icon: "success"
+                    });
+                }
+            });
+            
             cerrarDropdowns();
         }
 
@@ -258,12 +234,6 @@ $conn->close();
             var dropdowns = document.getElementsByClassName("dropdown-content");
             for (var i = 0; i < dropdowns.length; i++) {
                 dropdowns[i].classList.remove('show');
-            }
-        }
-
-        window.onclick = function(evento) {
-            if (!evento.target.matches('.dropdown button')) {
-                cerrarDropdowns();
             }
         }
     </script>
