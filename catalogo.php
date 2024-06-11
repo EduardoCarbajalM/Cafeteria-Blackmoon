@@ -133,7 +133,7 @@ $conn->close();
     </style>
 </head>
 <body>
-    <button id="addRowBtn">Agregar Nuevo Campo</button>
+    <button id="addRowBtn">+</button>
     
     <table id="myTable">
         <thead>
