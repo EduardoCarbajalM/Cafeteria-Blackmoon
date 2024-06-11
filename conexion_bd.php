@@ -17,6 +17,7 @@ if(mysqli_connect_errno()) {
     exit();
 }
 echo "Conexion exitosa"; */
+
 ini_set("display_errors", E_ALL);
 $server = "localhost";
 $user = "root";

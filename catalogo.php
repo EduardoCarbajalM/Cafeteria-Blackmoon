@@ -1,6 +1,16 @@
 <?php
 include 'conexion_bd.php';
 
+if (!isset($_SESSION['usuario'])) {
+    if (isset($_COOKIE['usuario'])) {
+        // Si existe una cookie, reiniciar la sesión
+        $_SESSION['usuario'] = $_COOKIE['usuario'];
+    } else {
+        header('Location: index.html');
+        exit();
+    }
+}
+
 $sql = "SELECT * FROM usuarios";
 $result = $conn->query($sql);
 

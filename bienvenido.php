@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 // Verificar si hay una sesión activa o una cookie
 if (!isset($_SESSION['usuario'])) {
     if (isset($_COOKIE['usuario'])) {
