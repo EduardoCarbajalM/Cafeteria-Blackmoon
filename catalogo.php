@@ -1,11 +1,58 @@
 <?php
-include 'conexion_bd.php';
+include 'conexion_bd.php'; // Incluir el archivo de conexión a la base de datos
 
+// Manejar solicitudes POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verificar si es una solicitud para agregar un nuevo registro
+    if (isset($_POST['nombre']) && isset($_POST['contraseña']) && isset($_POST['correo']) && !isset($_POST['id'])) {
+        $nombre = $_POST['nombre'];
+        $contraseña = $_POST['contraseña'];
+        $correo = $_POST['correo'];
+
+        $sql = "INSERT INTO usuarios (Nombre, Contraseña, Correo) VALUES ('$nombre', '$contraseña', '$correo')";
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => $conn->error]);
+        }
+        exit();
+    } 
+    // Verificar si es una solicitud para actualizar un registro existente
+    elseif (isset($_POST['id']) && isset($_POST['nombre']) && isset($_POST['contraseña']) && isset($_POST['correo'])) {
+        $id = $_POST['id'];
+        $nombre = $_POST['nombre'];
+        $contraseña = $_POST['contraseña'];
+        $correo = $_POST['correo'];
+
+        $sql = "UPDATE usuarios SET Nombre='$nombre', Contraseña='$contraseña', Correo='$correo' WHERE ID=$id";
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => $conn->error]);
+        }
+        exit();
+    } 
+    // Verificar si es una solicitud para eliminar un registro
+    elseif (isset($_POST['id'])) {
+        $id = $_POST['id'];
+
+        $sql = "DELETE FROM usuarios WHERE ID = $id";
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => $conn->error]);
+        }
+        exit();
+    }
+}
+
+// Obtener todos los registros de la tabla de usuarios
 $sql = "SELECT * FROM usuarios";
 $result = $conn->query($sql);
 
 $data = array();
 
+// Crear un array con los datos obtenidos
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $data[] = array(
@@ -13,12 +60,12 @@ if ($result->num_rows > 0) {
             $row['Nombre'],
             $row['Contraseña'],
             $row['Correo'],
-            '<div class="dropdown">' .
+            '<div class="desplegable">' .
             '<button onclick="btn_acciones(this)">...</button>' .
-            '<div class="dropdown-content">' .
+            '<div class="contenido-desplegable">' .
             '<button onclick="btn_ver()">Ver</button>' .
             '<button onclick="btn_editar()">Editar</button>' .
-            '<button onclick="btn_eliminar()">Eliminar</button>' .
+            '<button onclick="btn_eliminar(' . $row['ID'] . ')">Eliminar</button>' .
             '</div>' .
             '</div>'
         );
@@ -41,7 +88,7 @@ $conn->close();
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .dropdown-content {
+        .contenido-desplegable {
             display: none;
             position: absolute;
             background-color: #f9f9f9;
@@ -49,7 +96,7 @@ $conn->close();
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
         }
-        .dropdown-content button {
+        .contenido-desplegable button {
             color: black;
             padding: 12px 16px;
             text-decoration: none;
@@ -59,13 +106,13 @@ $conn->close();
             width: 100%;
             text-align: left;
         }
-        .dropdown-content button:hover {background-color: #f1f1f1;}
-        .show {display: block;}
+        .contenido-desplegable button:hover {background-color: #f1f1f1;}
+        .mostrar {display: block;}
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <table id="myTable" class="display">
+        <table id="miTabla" class="display">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -86,8 +133,8 @@ $conn->close();
             </tbody>
         </table>
 
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+        <!-- Modal para agregar -->
+        <div id="miModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -97,24 +144,20 @@ $conn->close();
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="addRowForm">
+                        <form id="formularioAgregar">
                             <div class="form-group">
-                                <label for="id">ID:</label>
-                                <input type="text" class="form-control" id="id" name="id">
+                                <label for="nombre">Nombre:</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre">
                             </div>
                             <div class="form-group">
-                                <label for="name">Nombre:</label>
-                                <input type="text" class="form-control" id="name" name="name">
+                                <label for="contraseña">Contraseña:</label>
+                                <input type="text" class="form-control" id="contraseña" name="contraseña">
                             </div>
                             <div class="form-group">
-                                <label for="password">Contraseña:</label>
-                                <input type="text" class="form-control" id="password" name="password">
+                                <label for="correo">Correo:</label>
+                                <input type="text" class="form-control" id="correo" name="correo">
                             </div>
-                            <div class="form-group">
-                                <label for="email">Correo:</label>
-                                <input type="text" class="form-control" id="email" name="email">
-                            </div>
-                            <button type="button" class="btn btn-primary" id="saveRowBtn">Guardar</button>
+                            <button type="button" class="btn btn-primary" id="guardarBtn">Guardar</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                         </form>
                     </div>
@@ -122,93 +165,154 @@ $conn->close();
             </div>
         </div>
 
-        <button id="addRowBtn" class="btn btn-success mt-3">Agregar Nuevo Campo</button>
+        <!-- Modal para editar -->
+        <div id="modalEditar" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Campo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formularioEditar">
+                            <input type="hidden" id="editarId" name="editarId">
+                            <div class="form-group">
+                                <label for="editarNombre">Nombre:</label>
+                                <input type="text" class="form-control" id="editarNombre" name="editarNombre">
+                            </div>
+                            <div class="form-group">
+                                <label for="editarContraseña">Contraseña:</label>
+                                <input type="text" class="form-control" id="editarContraseña" name="editarContraseña">
+                            </div>
+                            <div class="form-group">
+                                <label for="editarCorreo">Correo:</label>
+                                <input type="text" class="form-control" id="editarCorreo" name="editarCorreo">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="actualizarBtn">Actualizar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="agregarBtn" class="btn btn-success mt-3">Agregar Nuevo Campo</button>
     </div>
 
     <!-- Scripts de JavaScript -->
     <script>
         $(document).ready(function() {
-            var tabla = $('#myTable').DataTable();
+            var tabla = $('#miTabla').DataTable();
 
-            var modal = $('#myModal');
-            var btn = $('#addRowBtn');
-            var guardarBtn = $('#saveRowBtn');
+            var modal = $('#miModal');
+            var modalEditar = $('#modalEditar');
+            var btn = $('#agregarBtn');
+            var guardarBtn = $('#guardarBtn');
+            var actualizarBtn = $('#actualizarBtn');
 
+            // Mostrar el modal para agregar un nuevo registro
             btn.on('click', function() {
                 modal.modal('show');
             });
 
+            // Cerrar los modales al hacer clic en el botón de cerrar
             $('.close').on('click', function() {
                 modal.modal('hide');
+                modalEditar.modal('hide');
             });
 
-            $(window).on('click', function(event) {
-                if ($(event.target).is(modal)) {
-                    modal.modal('hide');
-                }
-            });
-
+            // Guardar nuevo registro
             guardarBtn.on('click', function() {
-                var id = $('#id').val();
-                var nombre = $('#name').val();
-                var contraseña = $('#password').val();
-                var correo = $('#email').val();
+                var nombre = $('#nombre').val();
+                var contraseña = $('#contraseña').val();
+                var correo = $('#correo').val();
 
-                tabla.row.add([
-                    id,
-                    nombre,
-                    contraseña,
-                    correo,
-                    '<div class="dropdown">' +
-                    '<button onclick="btn_acciones(this)">...</button>' +
-                    '<div class="dropdown-content">' +
-                    '<button onclick="btn_ver()">Ver</button>' +
-                    '<button onclick="btn_editar()">Editar</button>' +
-                    '<button onclick="btn_eliminar()">Eliminar</button>' +
-                    '</div>' +
-                    '</div>'
-                ]).draw(false);
-
-                modal.modal('hide');
-                $('#addRowForm')[0].reset();
+                $.post('catalogo.php', {
+                    nombre: nombre,
+                    contraseña: contraseña,
+                    correo: correo
+                }, function(response) {
+                    var data = JSON.parse(response);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                });
             });
 
-            $('#myTable tbody').on('click', 'button', function () {
-                var action = $(this).text();
+            // Manejar clics en los botones de la tabla
+            $('#miTabla tbody').on('click', 'button', function () {
+                var accion = $(this).text();
                 var data = tabla.row($(this).parents('tr')).data();
 
-                if (action === 'Ver') {
+                if (accion === 'Ver') {
                     btn_ver(data);
-                } else if (action === 'Editar') {
+                } else if (accion === 'Editar') {
                     btn_editar(data);
-                } else if (action === 'Eliminar') {
-                    btn_eliminar(data);
+                } else if (accion === 'Eliminar') {
+                    var id = data[0];
+                    btn_eliminar(id);
                 }
+            });
+
+            // Actualizar un registro existente
+            actualizarBtn.on('click', function() {
+                var id = $('#editarId').val();
+                var nombre = $('#editarNombre').val();
+                var contraseña = $('#editarContraseña').val();
+                var correo = $('#editarCorreo').val();
+
+                $.post('catalogo.php', {
+                    id: id,
+                    nombre: nombre,
+                    contraseña: contraseña,
+                    correo: correo
+                }, function(response) {
+                    var data = JSON.parse(response);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                });
+
+                modalEditar.modal('hide');
             });
         });
 
+        // Mostrar/ocultar el contenido del dropdown
         function btn_acciones(boton) {
-            var contenidoDropdown = boton.nextElementSibling;
-            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var contenidoDesplegable = boton.nextElementSibling;
+            var dropdowns = document.getElementsByClassName("contenido-desplegable");
             for (var i = 0; i < dropdowns.length; i++) {
-                if (dropdowns[i] != contenidoDropdown) {
-                    dropdowns[i].classList.remove('show');
+                if (dropdowns[i] != contenidoDesplegable) {
+                    dropdowns[i].classList.remove('mostrar');
                 }
             }
-            contenidoDropdown.classList.toggle("show");
+            contenidoDesplegable.classList.toggle("mostrar");
         }
 
-        function btn_ver() {
-            Swal.fire('Ver');
+        // Mostrar una alerta con los datos del registro
+        function btn_ver(data) {
+            Swal.fire('Ver: ' + JSON.stringify(data));
             cerrarDropdowns();
         }
 
-        function btn_editar() {
-            Swal.fire('Editar');
+        // Mostrar el modal de edición con los datos del registro
+        function btn_editar(data) {
+            $('#editarId').val(data[0]);
+            $('#editarNombre').val(data[1]);
+            $('#editarContraseña').val(data[2]);
+            $('#editarCorreo').val(data[3]);
+            $('#modalEditar').modal('show');
             cerrarDropdowns();
         }
 
-        function btn_eliminar() {
+        // Eliminar un registro
+        function btn_eliminar(id) {
             Swal.fire({
                 title: "Confirmación",
                 text: "¿Estás seguro de eliminar?",
@@ -219,10 +323,13 @@ $conn->close();
                 confirmButtonText: "Aceptar"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "Eliminado",
-                        text: "Eliminación exitosa",
-                        icon: "success"
+                    $.post('catalogo.php', { id: id }, function(response) {
+                        var data = JSON.parse(response);
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
                     });
                 }
             });
@@ -230,10 +337,11 @@ $conn->close();
             cerrarDropdowns();
         }
 
+        // Cerrar todos los dropdowns
         function cerrarDropdowns() {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var dropdowns = document.getElementsByClassName("contenido-desplegable");
             for (var i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove('show');
+                dropdowns[i].classList.remove('mostrar');
             }
         }
     </script>
