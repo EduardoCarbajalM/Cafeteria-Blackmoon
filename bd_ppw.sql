@@ -23,3 +23,35 @@ INSERT INTO usuarios (Nombre, Contraseña, Correo) VALUES
 -- DROP TABLE usuarios;
 
 SELECT * FROM usuarios;
+
+
+CREATE TABLE productos (
+	ID_producto INT NOT NULL AUTO_INCREMENT,
+    Titulo VARCHAR(30) NOT NULL,
+    Descripcion VARCHAR(150) NOT NULL,
+    Catalogo VARCHAR(25) NOT NULL,
+    Cantidad INT NOT NULL,
+    Precio DOUBLE NOT NULL,
+	PRIMARY KEY (ID_producto)
+);
+
+SELECT * FROM productos;
+
+-- DROP TABLE productos;
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Café Latte', 'Delicioso café con leche caliente', 'Bebidas', 10, 45.00),
+       ('Jugo Natural de Naranja', 'Refrescante jugo de naranja recién exprimido', 'Bebidas', 15, 30.00),
+       ('Té Helado de Durazno', 'Té negro infusionado con sabor a durazno y servido sobre hielo', 'Bebidas', 8, 35.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Ensalada César', 'Ensalada fresca con aderezo especial', 'Complementos', 12, 50.00),
+       ('Papas Fritas con Queso', 'Papas fritas crujientes cubiertas con queso derretido', 'Complementos', 20, 40.00),
+       ('Sopa de Tortilla', 'Sopa tradicional mexicana con tortillas crujientes y aguacate', 'Complementos', 10, 55.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Tarta de Chocolate', 'Deliciosa tarta de chocolate negro', 'Momentos Dulces', 5, 65.00),
+       ('Helado de Vainilla', 'Helado cremoso con sabor a vainilla', 'Momentos Dulces', 18, 40.00),
+       ('Churros con Chocolate', 'Churros crujientes acompañados de chocolate caliente', 'Momentos Dulces', 7, 50.00);
+
+ALTER TABLE productos ADD ImagenURL VARCHAR(255);

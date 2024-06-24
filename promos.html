@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menus</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+    <style>
+        /* Estilos adicionales para el botón de scroll */
+        #btn-scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none; /* Ocultar inicialmente el botón */
+            z-index: 1000; /* Asegura que esté sobre otros elementos */
+            background-color: #007bff; /* Color de fondo */
+            color: #fff; /* Color de texto */
+            border: none; /* Sin borde */
+            border-radius: 50%; /* Borde redondeado */
+            width: 50px; /* Ancho */
+            height: 50px; /* Altura */
+            text-align: center; /* Alineación del texto */
+            line-height: 48px; /* Ajuste vertical para centrar el ícono */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+        }
+
+        /* Estilo para el ícono dentro del botón */
+        #btn-scroll-top i {
+            font-size: 20px; /* Tamaño del ícono */
+        }
+
+        /* Estilos para el botón de agregar al carrito */
+        .btn-agregar-carrito {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Estilos para el carrito de compras */
+        #carrito-compras {
+            max-height: 300px; /* Altura máxima del carrito */
+            overflow-y: auto; /* Permitir scroll vertical si el contenido excede el tamaño */
+            border: 1px solid #ccc; /* Borde */
+            padding: 10px;
+            margin-top: 20px;
+            display: none; /* Ocultar inicialmente */
+            position: absolute;
+            background-color: #fff;
+            right: 10px;
+            top: 60px;
+            width: 415px; /* Ancho del menú desplegable */
+            z-index: 1000;
+        }
+
+        /* Estilos para cada item en el carrito */
+        .carrito-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        .carrito-item img {
+            max-width: 50px; /* Tamaño máximo de la imagen */
+            margin-right: 10px;
+        }
+
+        .carrito-item .info {
+            flex-grow: 1;
+        }
+
+        .carrito-item .acciones {
+            text-align: right;
+        }
+
+        .carrito-item .acciones button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-light p-3 mb-4 d-flex justify-content-between align-items-center">
+        <img src="https://via.placeholder.com/50" alt="mini menu usuario" class="rounded-circle">
+        <nav>
+            <a class="mx-2" href="inicio.html">Inicio</a>
+            <a class="mx-2" href="menu.html">Menús</a>
+            <a class="mx-2" href="promos.html">Promos</a>
+        </nav>
+        <!-- Imagen que simulará el carrito de compras -->
+        <img src="https://via.placeholder.com/30" alt="Carrito de Compras" id="carrito-icono" style="cursor: pointer;">
+    </header>
