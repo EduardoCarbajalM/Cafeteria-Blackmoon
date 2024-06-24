@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Iniciar una sesión normal
                 $_SESSION['usuario'] = $usuario;
             }
-            header('Location: catalogo.php');
+            header('Location: inicio.html');
             exit();
         } else {
             // Contraseña incorrecta
