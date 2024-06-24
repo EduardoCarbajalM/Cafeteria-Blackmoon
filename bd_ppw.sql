@@ -53,5 +53,7 @@ INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
 VALUES ('Tarta de Chocolate', 'Deliciosa tarta de chocolate negro', 'Momentos Dulces', 5, 65.00),
        ('Helado de Vainilla', 'Helado cremoso con sabor a vainilla', 'Momentos Dulces', 18, 40.00),
        ('Churros con Chocolate', 'Churros crujientes acompañados de chocolate caliente', 'Momentos Dulces', 7, 50.00);
-
-ALTER TABLE productos ADD ImagenURL VARCHAR(255);
+       
+       
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Café', 'Delicioso', 'Bebidas', 12, 50.00);       
