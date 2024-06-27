@@ -1,0 +1,146 @@
+/* Estilos de el header */
+.mx-2{
+    color: saddlebrown;
+    font-family: 'medieval', cursive;
+    font-size: medium;
+    text-decoration: solid;
+}
+.mx-2 il{
+    color: saddlebrown;
+    font-family: 'medieval', cursive;
+}
+body{
+    background-color: #FAEBD7;       
+    font-family: 'medieval', cursive;
+}
+.text-center{
+    font-family: 'medieval', cursive;
+}
+.lead::before{
+content: "★" ;
+}
+footer{
+    text-align: center;
+    padding:40px;
+}
+
+/* Estilos de el carrusel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.2); /* Fondo semi-transparente */
+    border-radius: 50%;
+}
+.carousel-control-prev,
+.carousel-control-next {
+    opacity: 0.5; /* Opacidad de las flechas */
+    transition: opacity 0.3s;
+}
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1; /* Opacidad completa al pasar el ratón */
+}
+
+/* Estilos para menus */
+
+/* Estilos adicionales para el botón de scroll */
+#btn-scroll-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    /* Ocultar inicialmente el botón */
+    z-index: 1000;
+    /* Asegura que esté sobre otros elementos */
+    background-color: #007bff;
+    /* Color de fondo */
+    color: #fff;
+    /* Color de texto */
+    border: none;
+    /* Sin borde */
+    border-radius: 50%;
+    /* Borde redondeado */
+    width: 50px;
+    /* Ancho */
+    height: 50px;
+    /* Altura */
+    text-align: center;
+    /* Alineación del texto */
+    line-height: 48px;
+    /* Ajuste vertical para centrar el ícono */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
+}
+
+/* Estilo para el ícono dentro del botón */
+#btn-scroll-top i {
+    font-size: 20px;
+    /* Tamaño del ícono */
+}
+
+/* Estilos para el botón de agregar al carrito */
+.btn-agregar-carrito {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Estilos para el carrito de compras */
+#carrito-compras {
+    max-height: 300px;
+    /* Altura máxima del carrito */
+    overflow-y: auto;
+    /* Permitir scroll vertical si el contenido excede el tamaño */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    right: 10px;
+    top: 60px;
+    width: 415px;
+    z-index: 1000;
+}
+
+/* Estilos para cada item en el carrito */
+.carrito-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.carrito-item img {
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.carrito-item .info {
+    flex-grow: 1;
+}
+
+.carrito-item .acciones {
+    text-align: right;
+}
+
+.carrito-item .acciones button {
+    margin-left: 5px;
+}
+
+/* Estilos para asegurar que todos los contenedores del menu, los productos tengan el mismo tamaño */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

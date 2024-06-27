@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
+.mini-menu {
+    position: absolute; /* Cambiar a posición absoluta para colocar dinámicamente */
+    background-color: #fff;
+    border: 3px solid #715649;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    padding: 20px;
+    width: 250px;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    z-index: 1000;
+    opacity: 0;
+    font-family: 'Permanent Marker', cursive;
+    color: #333;
+}
+
+.mini-menu.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 24px;
+    color: #715649;
+    transition: transform 0.2s ease-in-out;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+.menu-content {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.cafe-gif {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    background-image: url('cafe.gif');
+    background-size: cover;
+}
+
+.luna-gif {
+    position: absolute;
+    bottom: 10px;
+    top: 15px;
+    left: 12px;
+    width: 45px;
+    height: 45px;
+    background-image: url('luna.gif');
+    background-size: cover;
+}
+

@@ -1,41 +1,33 @@
 <?php
-include 'conexion_bd.php';
+ini_set("display_errors", E_ALL);
+require_once 'conexion_bd.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nombre = $conn->real_escape_string($_POST['usuario']);
-    $contraseña = password_hash($_POST['contraseña'], PASSWORD_DEFAULT);
-    $correo = $conn->real_escape_string($_POST['correo']);
+    $nombre = $_POST['usuario'];
+    $password = $_POST['contraseña'];
+    $correo = $_POST['correo'];
 
     // Verificar si el nombre de usuario o el correo electrónico ya existen
-    $sql_verificar = "SELECT * FROM usuarios WHERE Nombre = '$nombre' OR Correo = '$correo'";
-    $result = $conn->query($sql_verificar);
+    $sql_verificar = $conn->prepare("SELECT * FROM usuarios WHERE Nombre = ? OR Correo = ?");
+    $sql_verificar->bind_param("ss", $nombre, $correo);
+    $sql_verificar->execute();
+    $result = $sql_verificar->get_result();
 
     if ($result->num_rows > 0) {
-        echo "El nombre de usuario o el correo electrónico ya están registrados.";
+        echo "<script>alert('El nombre de usuario o el correo electrónico ya están registrados.'); window.location.href = 'registro.php';</script>";
     } else {
-        // Insertar nuevo usuario en la base de datos
-        $sql = "INSERT INTO usuarios (Nombre, Contraseña, Correo) VALUES ('$nombre', '$contraseña', '$correo')";
+        $saldoInicial = 1000;
+        $esAdmin = 0; // Valor falso para el campo Administrador
+        $sql = $conn->prepare("INSERT INTO usuarios (Nombre, Password, Correo, saldo, Administrador) VALUES (?, ?, ?, ?, ?)");
+        $sql->bind_param("sssii", $nombre, $password, $correo, $saldoInicial, $esAdmin);
 
-        if ($conn->query($sql) === TRUE) {
-            echo "Nuevo usuario registrado exitosamente";
+        if ($sql->execute() === TRUE) {
+            echo "<script>alert('REGISTRADO CORRECTAMENTE $nombre'); window.location.href = 'index.html';</script>";
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "Error: " . $sql->error;
         }
     }
 
     $conn->close();
 }
 ?>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-</head>
-<body>
-    <a href="index.html">Iniciar Sesion</a>
-</body>
-</html>

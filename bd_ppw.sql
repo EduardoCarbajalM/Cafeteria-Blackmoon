@@ -5,25 +5,22 @@ USE programacionweb;
 CREATE TABLE usuarios (
     ID int NOT NULL AUTO_INCREMENT,
     Nombre VARCHAR(20) NOT NULL,
-    Contraseña VARCHAR(255) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
     Correo VARCHAR(50) NOT NULL,
+    saldo DOUBLE,
+    Administrador BOOLEAN NOT NULL,
     PRIMARY KEY (ID),
     UNIQUE (Nombre),
     UNIQUE (Correo)
 );
 
-/*
-INSERT INTO usuarios (Nombre, Contraseña, Correo) VALUES 
-('Eduardo', '$2y$10$E9F6TqxwFfI4K7a.e/yxCeOE3aYYnntVo1GgPj5ZOMw9W4XZKxgWm', 'ecarbajal@gmail.com'),
-('Grecia', '$2y$10$7P7qAiy23JTCmy7uO2n2TeWf9K6PQYqcsA4N8yF3t1XGybhk5A0.e', 'grecia@gmail.com'),
-('Diana', '$2y$10$F/ew1VOXUayzQeH1ufF/zOS0CnbJWXsDJyMtc90z0M4mr/vkHcBoS', 'diana@gmail.com'),
-('Sara', '$2y$10$ybZ/mW0QW5HdF5/yYlx2UeRxFQmT7rPdGy8fEZZ2U6lB4X8ZZkmKO', 'sara@gmail.com');
-*/
+INSERT INTO usuarios (Nombre, Password, Correo, saldo, Administrador)
+VALUES ('admin', 'sudo', 'admin@ejemplo.com', 0, TRUE);
+
 
 -- DROP TABLE usuarios;
 
 SELECT * FROM usuarios;
-
 
 CREATE TABLE productos (
 	ID_producto INT NOT NULL AUTO_INCREMENT,
@@ -38,22 +35,39 @@ CREATE TABLE productos (
 SELECT * FROM productos;
 
 -- DROP TABLE productos;
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Expreso', 'Shot de expreso colombiano', 'Bebidas', 20, 30.00);
 
 INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
-VALUES ('Café Latte', 'Delicioso café con leche caliente', 'Bebidas', 10, 45.00),
-       ('Jugo Natural de Naranja', 'Refrescante jugo de naranja recién exprimido', 'Bebidas', 15, 30.00),
-       ('Té Helado de Durazno', 'Té negro infusionado con sabor a durazno y servido sobre hielo', 'Bebidas', 8, 35.00);
+VALUES ('Capuchino', 'Shot doble de expreso con leche endulsado con stevia', 'Bebidas', 20, 30.00);
 
 INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
-VALUES ('Ensalada César', 'Ensalada fresca con aderezo especial', 'Complementos', 12, 50.00),
-       ('Papas Fritas con Queso', 'Papas fritas crujientes cubiertas con queso derretido', 'Complementos', 20, 40.00),
-       ('Sopa de Tortilla', 'Sopa tradicional mexicana con tortillas crujientes y aguacate', 'Complementos', 10, 55.00);
+VALUES ('Tisana de moras', 'Infusión de moras silvestres servido con frutos secos', 'Bebidas', 20, 35.00);
 
 INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
-VALUES ('Tarta de Chocolate', 'Deliciosa tarta de chocolate negro', 'Momentos Dulces', 5, 65.00),
-       ('Helado de Vainilla', 'Helado cremoso con sabor a vainilla', 'Momentos Dulces', 18, 40.00),
-       ('Churros con Chocolate', 'Churros crujientes acompañados de chocolate caliente', 'Momentos Dulces', 7, 50.00);
-       
-       
+VALUES ('Frappé', 'Frappe de caramelo', 'Bebidas', 20, 30.00);
+
 INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
-VALUES ('Café', 'Delicioso', 'Bebidas', 12, 50.00);       
+VALUES ('Baguette', 'Baguette con pechuga de pavo y queso manchego', 'Complementos', 20, 50.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Ensalada Cesar', 'ensalada cesar con pollo y parmesano', 'Complementos', 20, 40.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Pasta Alfredo', 'Salsa Alfredo con pechuga asada y sasonada con especias', 'Complementos', 20, 55.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Tarta de Chocolate', 'Deliciosa tarta de chocolate semiamargo con almendras', 'Momentos Dulces', 20, 65.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Pastel de mocha', 'pan de café co relleno de chocolate', 'Momentos Dulces', 20, 65.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Flan', 'flan de vainilla con caramelo', 'Momentos Dulces', 20, 40.00);
+
+INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio)
+VALUES ('Pay de limón', 'Mouse de limon con una base de galleta', 'Momentos Dulces', 20, 50.00);
+
+
+SELECT * FROM usuarios;
+SELECT * FROM productos;

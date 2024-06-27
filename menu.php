@@ -1,5 +1,14 @@
 <?php
+ini_set("display_errors", E_ALL);
 include 'conexion_bd.php';
+
+session_start();
+
+// Verificar si no hay cookie ni sesión de usuario activa
+if (!isset($_COOKIE['usuario']) && !isset($_SESSION['usuario'])) {
+    header('Location: index.html');
+    exit();
+}
 
 // Inicializar los arreglos
 $bebidas = [];
@@ -7,34 +16,58 @@ $complementos = [];
 $momentos_dulces = [];
 
 // Consulta para obtener los productos
-$query = "SELECT Titulo, Descripcion, Precio, Catalogo FROM productos";
+$query = "SELECT Titulo, Descripcion, Precio, Catalogo, Cantidad FROM productos";
 $result = $conn->query($query);
 
 // Verificar si se obtuvieron resultados
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $producto = [
             'titulo' => $row['Titulo'],
             'descripcion' => $row['Descripcion'],
             'precio' => $row['Precio'],
             'categoria' => strtolower(str_replace(' ', '-', $row['Catalogo'])),
-            'imagen' => '' // Dejar vacío para añadir la ruta manualmente
+            'imagen' => '',
+            'stock' => $row['Cantidad']
         ];
-        
+
         // Añadir la ruta de la imagen manualmente según el título del producto
         switch ($row['Titulo']) {
-            case 'Café Latte':
-                $producto['imagen'] = 'img/helado.jpg';
+            case 'Expreso':
+                $producto['imagen'] = 'img/expreso.jpg';
                 break;
-            case 'Pepsi':
-                $producto['imagen'] = 'imagenes/pepsi.jpg';
+            case 'Capuchino':
+                $producto['imagen'] = 'img/capuchino.jpg';
                 break;
-            case 'Agua Mineral':
-                $producto['imagen'] = 'imagenes/agua_mineral.jpg';
+            case 'Tisana de moras':
+                $producto['imagen'] = 'img/tisana.jpeg';
                 break;
-            // Añadir más casos según sea necesario
+            case 'Frappé':
+                $producto['imagen'] = 'img/frappe.jpeg';
+                break;
+            case 'Baguette':
+                $producto['imagen'] = 'img/bp.jpg';
+                break;
+            case 'Ensalada Cesar':
+                $producto['imagen'] = 'img/ec.jpeg';
+                break;
+            case 'Pasta Alfredo':
+                $producto['imagen'] = 'img/pf.jpeg';
+                break;
+            case 'Tarta de Chocolate':
+                $producto['imagen'] = 'img/pastelc.jpg';
+                break;
+            case 'Pastel de mocha':
+                $producto['imagen'] = 'img/pastelMoka.jpeg';
+                break;
+            case 'Flan':
+                $producto['imagen'] = 'img/flan.jpg';
+                break;
+            case 'Pay de limón':
+                $producto['imagen'] = 'img/paylimon.jpeg';
+                break;
             default:
-                $producto['imagen'] = 'imagenes/default.jpg'; // Imagen por defecto si no se encuentra una específica
+                $producto['imagen'] = 'img/default.jpg';
         }
 
         // Clasificar los productos según su categoría
@@ -64,90 +97,53 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menus</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="minimenu.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
     <style>
-        /* Estilos adicionales para el botón de scroll */
-        #btn-scroll-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: none; /* Ocultar inicialmente el botón */
-            z-index: 1000; /* Asegura que esté sobre otros elementos */
-            background-color: #007bff; /* Color de fondo */
-            color: #fff; /* Color de texto */
-            border: none; /* Sin borde */
-            border-radius: 50%; /* Borde redondeado */
-            width: 50px; /* Ancho */
-            height: 50px; /* Altura */
-            text-align: center; /* Alineación del texto */
-            line-height: 48px; /* Ajuste vertical para centrar el ícono */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+        .mx-2{
+            color: saddlebrown;
+            font-family: 'medieval', cursive;
+            font-size: medium;
+            text-decoration: solid;
         }
-
-        /* Estilo para el ícono dentro del botón */
-        #btn-scroll-top i {
-            font-size: 20px; /* Tamaño del ícono */
+        .mx-2 il{
+            color: saddlebrown;
+            font-family: 'medieval', cursive;
         }
-
-        /* Estilos para el botón de agregar al carrito */
-        .btn-agregar-carrito {
-            width: 100%;
-            margin-top: 10px;
+        body{
+            background-color: #FAEBD7;       
+            font-family: 'medieval', cursive;
         }
-
-        /* Estilos para el carrito de compras */
-        #carrito-compras {
-            max-height: 300px; /* Altura máxima del carrito */
-            overflow-y: auto; /* Permitir scroll vertical si el contenido excede el tamaño */
-            border: 1px solid #ccc; /* Borde */
-            padding: 10px;
-            margin-top: 20px;
-            display: none; /* Ocultar inicialmente */
-            position: absolute;
-            background-color: #fff;
-            right: 10px;
-            top: 60px;
-            width: 415px; /* Ancho del menú desplegable */
-            z-index: 1000;
+        .text-center{
+            font-family: 'medieval', cursive;
         }
-
-        /* Estilos para cada item en el carrito */
-        .carrito-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
+        .lead::before{
+        content: "★" ;
         }
+        footer{
+            text-align: center;
+            padding:40px;
 
-        .carrito-item img {
-            max-width: 50px; /* Tamaño máximo de la imagen */
-            margin-right: 10px;
         }
-
-        .carrito-item .info {
-            flex-grow: 1;
-        }
-
-        .carrito-item .acciones {
-            text-align: right;
-        }
-
-        .carrito-item .acciones button {
-            margin-left: 5px;
+        #horario-overlay h1 {
+            font-family: 'medieval', cursive;
+            color: saddlebrown;
         }
     </style>
 </head>
 <body>
     <header class="bg-light p-3 mb-4 d-flex justify-content-between align-items-center">
-        <img src="https://via.placeholder.com/50" alt="mini menu usuario" class="rounded-circle">
+        <img src="img/usuario.png" alt="mini menu usuario" class="rounded-circle">
         <nav>
-            <a class="mx-2" href="inicio.html">Inicio</a>
-            <a class="mx-2" href="menu.html">Menús</a>
-            <a class="mx-2" href="promos.html">Promos</a>
+            <a class="mx-2" href="inicio.php">Inicio</a>
+            <a class="mx-2" href="menu.php">Menús</a>
+            <a class="mx-2" href="promos.php">Promos</a>
+            <a class="mx-2" href="#" id="logout">Cerrar Sesión</a>
         </nav>
-        <!-- Imagen que simulará el carrito de compras -->
-        <img src="https://via.placeholder.com/30" alt="Carrito de Compras" id="carrito-icono" style="cursor: pointer;">
+        <img src="img/carrito.png" alt="Carrito de Compras" id="carrito-icono" style="cursor: pointer;">
     </header>
 
     <div class="container">
@@ -175,7 +171,12 @@ $conn->close();
                                     <h5 class="card-title"><?= $bebida['titulo'] ?></h5>
                                     <p class="card-text"><?= $bebida['descripcion'] ?></p>
                                     <p class="card-text"><small class="text-muted">Precio: $<?= number_format($bebida['precio'], 2) ?></small></p>
-                                    <button class="btn btn-primary btn-agregar-carrito" onclick="agregarAlCarrito('<?= $bebida['titulo'] ?>', '<?= $bebida['descripcion'] ?>', <?= $bebida['precio'] ?>, '<?= $bebida['imagen'] ?>')">+</button>
+                                    <?php if ($bebida['stock'] > 0): ?>
+                                        <button class="btn btn-primary btn-agregar-carrito"
+                                            onclick="agregarAlCarrito('<?= $bebida['titulo'] ?>', '<?= $bebida['descripcion'] ?>', <?= $bebida['precio'] ?>, '<?= $bebida['imagen'] ?>', <?= $bebida['stock'] ?>)">+</button>
+                                    <?php else: ?>
+                                        <button class="btn btn-secondary" disabled>Producto agotado</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -189,17 +190,22 @@ $conn->close();
                 <h2 class="text-center">Complementos</h2>
                 <div class="row" id="contenedor-complementos">
                     <?php foreach ($complementos as $complemento): ?>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <img src="<?= $complemento['imagen'] ?>" class="card-img-top" alt="Producto">
-                                <div class="card-body">
-                                    <h5 class="card-title"><?= $complemento['titulo'] ?></h5>
-                                    <p class="card-text"><?= $complemento['descripcion'] ?></p>
-                                    <p class="card-text"><small class="text-muted">Precio: $<?= number_format($complemento['precio'], 2) ?></small></p>
-                                    <button class="btn btn-primary btn-agregar-carrito" onclick="agregarAlCarrito('<?= $complemento['titulo'] ?>', '<?= $complemento['descripcion'] ?>', <?= $complemento['precio'] ?>, '<?= $complemento['imagen'] ?>')">+</button>
-                                </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="<?= $complemento['imagen'] ?>" class="card-img-top" alt="Producto">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= $complemento['titulo'] ?></h5>
+                                <p class="card-text"><?= $complemento['descripcion'] ?></p>
+                                <p class="card-text"><small class="text-muted">Precio: $<?= number_format($complemento['precio'], 2) ?></small></p>
+                                <?php if ($complemento['stock'] > 0): ?>
+                                    <button class="btn btn-primary btn-agregar-carrito"
+                                        onclick="agregarAlCarrito('<?= $complemento['titulo'] ?>', '<?= $complemento['descripcion'] ?>', <?= $complemento['precio'] ?>, '<?= $complemento['imagen'] ?>', <?= $complemento['stock'] ?>)">+</button>
+                                <?php else: ?>
+                                    <button class="btn btn-secondary" disabled>Producto agotado</button>
+                                <?php endif; ?>
                             </div>
                         </div>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -209,83 +215,204 @@ $conn->close();
             <div class="col">
                 <h2 class="text-center">Momentos Dulces</h2>
                 <div class="row" id="contenedor-momentos-dulces">
-                    <?php foreach ($momentos_dulces as $dulce): ?>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <img src="<?= $dulce['imagen'] ?>" class="card-img-top" alt="Producto">
-                                <div class="card-body">
-                                    <h5 class="card-title"><?= $dulce['titulo'] ?></h5>
-                                    <p class="card-text"><?= $dulce['descripcion'] ?></p>
-                                    <p class="card-text"><small class="text-muted">Precio: $<?= number_format($dulce['precio'], 2) ?></small></p>
-                                    <button class="btn btn-primary btn-agregar-carrito" onclick="agregarAlCarrito('<?= $dulce['titulo'] ?>', '<?= $dulce['descripcion'] ?>', <?= $dulce['precio'] ?>, '<?= $dulce['imagen'] ?>')">+</button>
-                                </div>
+                    <?php foreach ($momentos_dulces as $momento_dulce): ?>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="<?= $momento_dulce['imagen'] ?>" class="card-img-top" alt="Producto">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= $momento_dulce['titulo'] ?></h5>
+                                <p class="card-text"><?= $momento_dulce['descripcion'] ?></p>
+                                <p class="card-text"><small class="text-muted">Precio: $<?= number_format($momento_dulce['precio'], 2) ?></small></p>
+                                <?php if ($momento_dulce['stock'] > 0): ?>
+                                    <button class="btn btn-primary btn-agregar-carrito"
+                                        onclick="agregarAlCarrito('<?= $momento_dulce['titulo'] ?>', '<?= $momento_dulce['descripcion'] ?>', <?= $momento_dulce['precio'] ?>, '<?= $momento_dulce['imagen'] ?>', <?= $momento_dulce['stock'] ?>)">+</button>
+                                <?php else: ?>
+                                    <button class="btn btn-secondary" disabled>Producto agotado</button>
+                                <?php endif; ?>
                             </div>
                         </div>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>
         </div>
+    </div>
 
+        <!-- Carrito de Compras -->
+        <div id="carrito-compras">
+            <h5>Carrito de Compras</h5>
+            <div id="carrito-items"></div>
+            <div class="d-flex justify-content-between mt-3">
+                <strong>Total:</strong>
+                <span id="total-carrito">$0.00</span>
+            </div>
+            <div class="row mt-4">
+                <div class="col-6 text-center">
+                    <button class="btn btn-secondary btn-block" onclick="cancelarOrden()">Cancelar Orden</button>
+                </div>
+                <div class="col-6 text-center">
+                    <form id="orden-form" method="post" action="orden.php" style="display: none;">
+                        <input type="hidden" name="carrito" id="carrito-input">
+                    </form>
+                    <button class="btn btn-primary btn-block" onclick="confirmarOrden()">Confirmar Orden</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de scroll-top -->
         <button id="btn-scroll-top"><i class="fas fa-arrow-up"></i></button>
-
-        <div id="carrito-compras"></div>
     </div>
 
     <script>
-        document.getElementById('carrito-icono').addEventListener('click', function() {
-            var carrito = document.getElementById('carrito-compras');
-            if (carrito.style.display === 'none') {
-                carrito.style.display = 'block';
+        // Arreglo para almacenar los productos del carrito
+        let carrito = [];
+
+        // Función para agregar un producto al carrito
+        function agregarAlCarrito(titulo, descripcion, precio, imagen, stock) {
+            const producto = carrito.find(item => item.titulo === titulo);
+            if (producto) {
+                if (producto.cantidad < stock && producto.cantidad < 5) {
+                    producto.cantidad++;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'No puedes agregar más unidades de este producto.',
+                    });
+                }
             } else {
-                carrito.style.display = 'none';
+                if (stock > 0) {
+                    carrito.push({ titulo, descripcion, precio, imagen, cantidad: 1, stock });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Producto agotado',
+                        text: 'Este producto está agotado.',
+                    });
+                }
             }
+            actualizarCarrito();
+        }
+
+
+
+        // Función para actualizar la vista del carrito
+        function actualizarCarrito() {
+            const carritoItems = document.getElementById('carrito-items');
+            const totalCarrito = document.getElementById('total-carrito');
+            const carritoCompras = document.getElementById('carrito-compras');
+            const botonesCarrito = document.querySelectorAll('#carrito-compras .row');
+
+            carritoItems.innerHTML = '';
+
+            let total = 0;
+
+            if (carrito.length === 0) {
+                carritoItems.innerHTML = '<p>Tu carrito se encuentra vacío, agrega productos para realizar un pedido</p>';
+                totalCarrito.innerText = '$0.00';
+
+                // Ocultar el total y los botones
+                totalCarrito.parentElement.style.display = 'none'; // Ocultar el total
+                botonesCarrito.forEach(boton => boton.style.display = 'none');
+            } else {
+                carrito.forEach((producto, index) => {
+                    total += producto.precio * producto.cantidad;
+
+                    const item = document.createElement('div');
+                    item.classList.add('carrito-item');
+                    item.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <img src="${producto.imagen}" alt="${producto.titulo}">
+                            <div class="info">
+                                <h6>${producto.titulo}</h6>
+                                <p>Precio: $${producto.precio.toFixed(2)}</p>
+                                <p>Cantidad: ${producto.cantidad}</p>
+                                <p>Subtotal: $${(producto.precio * producto.cantidad).toFixed(2)}</p>
+                            </div>
+                            <div class="acciones">
+                                <button class="btn btn-sm btn-primary" onclick="cambiarCantidad(${index}, 1)">+</button>
+                                <button class="btn btn-sm btn-secondary" onclick="cambiarCantidad(${index}, -1)">-</button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarDelCarrito(${index})">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    carritoItems.appendChild(item);
+                });
+
+                totalCarrito.innerText = `$${total.toFixed(2)}`;
+
+                // Mostrar el total y los botones
+                totalCarrito.parentElement.style.display = 'flex'; // Mostrar el total
+                botonesCarrito.forEach(boton => boton.style.display = 'flex');
+            }
+        }
+
+
+        // Función para cambiar la cantidad de un producto en el carrito
+        function cambiarCantidad(index, cantidad) {
+            if ((carrito[index].cantidad + cantidad > carrito[index].stock) || (carrito[index].cantidad + cantidad > 5)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'No puedes agregar más unidades de este producto.',
+                    });
+                } else {
+                carrito[index].cantidad += cantidad;
+                if (carrito[index].cantidad <= 0) {
+                    carrito.splice(index, 1);
+                }
+                actualizarCarrito();
+            }
+        }
+
+
+
+        // Función para eliminar un producto del carrito
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+
+        // Función para cancelar la orden
+        function cancelarOrden() {
+            carrito = [];
+            actualizarCarrito();
+        }
+
+        // Función para confirmar la orden
+        function confirmarOrden() {
+            const carritoInput = document.getElementById('carrito-input');
+            carritoInput.value = JSON.stringify(carrito);
+            document.getElementById('orden-form').submit();
+        }
+
+        // Mostrar u ocultar el carrito al hacer clic en el icono del carrito
+        document.getElementById('carrito-icono').addEventListener('click', () => {
+            const carritoCompras = document.getElementById('carrito-compras');
+            carritoCompras.style.display = carritoCompras.style.display === 'none' ? 'block' : 'none';
         });
 
-        window.addEventListener('scroll', function() {
-            var btnScrollTop = document.getElementById('btn-scroll-top');
-            if (window.pageYOffset > 300) {
+        // Mostrar el botón de scroll cuando se baja la página
+        window.addEventListener('scroll', () => {
+            const btnScrollTop = document.getElementById('btn-scroll-top');
+            if (window.scrollY > 200) {
                 btnScrollTop.style.display = 'block';
             } else {
                 btnScrollTop.style.display = 'none';
             }
         });
 
-        document.getElementById('btn-scroll-top').addEventListener('click', function() {
+        // Función para el botón de scroll hacia arriba
+        document.getElementById('btn-scroll-top').addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        function agregarAlCarrito(titulo, descripcion, precio, imagen) {
-            var carrito = document.getElementById('carrito-compras');
-
-            var item = document.createElement('div');
-            item.className = 'carrito-item d-flex';
-
-            var img = document.createElement('img');
-            img.src = imagen;
-            img.alt = titulo;
-
-            var info = document.createElement('div');
-            info.className = 'info';
-            info.innerHTML = '<strong>' + titulo + '</strong><p>' + descripcion + '</p><p><small>$' + precio.toFixed(2) + '</small></p>';
-
-            var acciones = document.createElement('div');
-            acciones.className = 'acciones';
-            var btnEliminar = document.createElement('button');
-            btnEliminar.className = 'btn btn-danger btn-sm';
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.addEventListener('click', function() {
-                carrito.removeChild(item);
-            });
-
-            acciones.appendChild(btnEliminar);
-
-            item.appendChild(img);
-            item.appendChild(info);
-            item.appendChild(acciones);
-
-            carrito.appendChild(item);
-            carrito.style.display = 'block';
-        }
+        // Llamada inicial para actualizar el carrito al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarCarrito();
+        });
     </script>
 </body>
+<script src="minimenu.js"></script>
+<script src="cerrarsesion.js"></script>
 </html>
