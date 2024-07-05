@@ -6,7 +6,26 @@ session_start();
 
 // Verificar si no hay cookie ni sesión de usuario activa
 if (!isset($_COOKIE['usuario']) && !isset($_SESSION['usuario'])) {
-    header('Location: index.html');
+    header('Location: index.php');
+    exit();
+}
+
+// Cerrar sesión
+if (isset($_GET['cerrar_sesion'])) {
+    $_SESSION = array();
+    
+    session_unset();
+    session_destroy();
+    
+    if (isset($_COOKIE['usuario'])) {
+        setcookie('usuario', '', time() - 3600, '/');
+    }
+    
+    if (isset($_COOKIE['administrador'])) {
+        setcookie('administrador', '', time() - 3600, '/');
+    }
+    
+    header('Location: index.php');
     exit();
 }
 
@@ -42,7 +61,7 @@ if ($result->num_rows > 0) {
             case 'Tisana de moras':
                 $producto['imagen'] = 'img/tisana.jpeg';
                 break;
-            case 'Frappé':
+            case 'Frappe':
                 $producto['imagen'] = 'img/frappe.jpeg';
                 break;
             case 'Baguette':
@@ -141,7 +160,7 @@ $conn->close();
             <a class="mx-2" href="inicio.php">Inicio</a>
             <a class="mx-2" href="menu.php">Menús</a>
             <a class="mx-2" href="promos.php">Promos</a>
-            <a class="mx-2" href="#" id="logout">Cerrar Sesión</a>
+			<a class="mx-2" href="?cerrar_sesion=1" id="cerrar-sesion">Cerrar Sesión</a>
         </nav>
         <img src="img/carrito.png" alt="Carrito de Compras" id="carrito-icono" style="cursor: pointer;">
     </header>
@@ -258,7 +277,7 @@ $conn->close();
                 </div>
             </div>
         </div>
-
+	<div>
         <!-- Botón de scroll-top -->
         <button id="btn-scroll-top"><i class="fas fa-arrow-up"></i></button>
     </div>
@@ -412,7 +431,23 @@ $conn->close();
             actualizarCarrito();
         });
     </script>
+	<script>
+        document.onkeydown = function(e) {
+            if ((e.ctrlKey && 
+                (e.keyCode === 85 || // Ctrl+U
+                e.keyCode === 117)) || // Ctrl+F6
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                e.keyCode === 123) { // F12
+                swal("Deja de intentar robar puntos, pareces muerto de hambre");
+                return false;
+            }
+        };
+
+        document.oncontextmenu = function(e) {
+            swal("Deja de intentar robar puntos, pareces muerto de hambre");
+            return false;
+        };
+	</script>
 </body>
 <script src="minimenu.js"></script>
-<script src="cerrarsesion.js"></script>
 </html>

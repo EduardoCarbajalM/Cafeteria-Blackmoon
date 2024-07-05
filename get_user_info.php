@@ -1,5 +1,29 @@
 <?php
 session_start();
+// Cerrar sesión
+if (isset($_GET['cerrar_sesion'])) {
+    $_SESSION = array();
+    
+    session_unset();
+    session_destroy();
+    
+    if (isset($_COOKIE['usuario'])) {
+        setcookie('usuario', '', time() - 3600, '/');
+    }
+    
+    if (isset($_COOKIE['administrador'])) {
+        setcookie('administrador', '', time() - 3600, '/');
+    }
+    
+    header('Location: index.php');
+    exit();
+}
+
+if (!isset($_SERVER['HTTP_REFERER']) || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != $_SERVER['SERVER_NAME']) {
+    header("Location: ?cerrar_sesion=1");
+    exit();
+}
+
 include 'conexion_bd.php';
 
 $usuario = null;

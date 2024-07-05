@@ -1,9 +1,34 @@
+<?php
+session_start();
+
+if (isset($_SESSION['usuario'])) {
+    header('Location: inicio.php');
+    exit();
+}
+
+if (isset($_SESSION['administrador'])) {
+    header('Location: inicio_admin.php');
+    exit();
+}
+
+if (isset($_COOKIE['usuario'])) {
+    header('Location: inicio.php');
+    exit();
+}
+
+if (isset($_COOKIE['administrador'])) {
+    header('Location: inicio_admin.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login</title>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <style>
 body {
             display: flex;
@@ -110,7 +135,7 @@ body {
             <tr>
                 <td colspan="2" style="text-align: center;">
                     <button id="btn_enviar" type="submit">Entrar</button>
-                    <p>No tienes una cuenta? <a href="registro.html">Registrate aquí</a></p>
+                    <p>No tienes una cuenta? <a href="registro.php">Registrate aquí</a></p>
                 </td>
             </tr>
         </table>
@@ -136,6 +161,28 @@ body {
                 iconoAlternar.alt = 'Mostrar contraseña';
             }
         }
+    </script>
+    <script>
+      document.onkeydown = function(e) {
+        if ((e.ctrlKey && 
+             (e.keyCode === 85 || // Ctrl+U
+              e.keyCode === 117)) || // Ctrl+F6
+            (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+            e.keyCode === 123) { // F12
+          return false;
+        }
+      };
+
+      document.oncontextmenu = function(e) {
+	    e.preventDefault();
+      };
+
+      <?php
+      if (isset($_SESSION['error'])) {
+        echo "swal('Error', '{$_SESSION['error']}', 'error');";
+        unset($_SESSION['error']);
+      }
+      ?>
     </script>
 </body>
 </html>

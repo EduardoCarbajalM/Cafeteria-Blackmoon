@@ -1,10 +1,16 @@
 <?php
+session_start();
 include 'conexion_bd.php'; 
 
-session_start();
+// Verificar si no hay cookie ni sesión de administrador activa
+if (!isset($_COOKIE['administrador']) && !isset($_SESSION['administrador'])) {
+    header('Location: inicio.php');
+    exit();
+}
 
-if (!isset($_SESSION['usuario']) && !isset($_COOKIE['usuario'])) {
-    header('Location: index.html');
+// Verificar si hay cookie o sesión de usuario (no administrador) activa
+if (isset($_COOKIE['usuario']) || isset($_SESSION['usuario'])) {
+    echo '<script>alert("No tienes permiso para acceder a esta página."); window.location.href = "inicio.php";</script>';
     exit();
 }
 
@@ -23,7 +29,7 @@ if (isset($_GET['cerrar_sesion'])) {
         setcookie('administrador', '', time() - 3600, '/');
     }
     
-    header('Location: index.html');
+    header('Location: index.php');
     exit();
 }
 
@@ -35,6 +41,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $catalogo = $_POST['catalogo'];
         $cantidad = $_POST['cantidad'];
         $precio = $_POST['precio'];
+      
+        // Verificar si ya existe un producto con el mismo título o descripción
+        $check_sql = "SELECT COUNT(*) FROM productos WHERE Titulo = ? OR Descripcion = ?";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("ss", $titulo, $descripcion);
+        $check_stmt->execute();
+        $check_stmt->bind_result($count);
+        $check_stmt->fetch();
+        $check_stmt->close();
+
+        if ($count > 0) {
+            echo json_encode(['success' => false, 'error' => 'El título o la descripción ya existen.']);
+            exit();
+        }
 
         $sql = "INSERT INTO productos (Titulo, Descripcion, Catalogo, Cantidad, Precio) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -55,6 +75,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $catalogo = $_POST['catalogo'];
         $cantidad = $_POST['cantidad'];
         $precio = $_POST['precio'];
+      
+        // Verificar si ya existe otro producto con el mismo título o descripción
+        $check_sql = "SELECT COUNT(*) FROM productos WHERE (Titulo = ? OR Descripcion = ?) AND ID_producto != ?";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("ssi", $titulo, $descripcion, $id);
+        $check_stmt->execute();
+        $check_stmt->bind_result($count);
+        $check_stmt->fetch();
+        $check_stmt->close();
+
+        if ($count > 0) {
+            echo json_encode(['success' => false, 'error' => 'El título o la descripción ya existen.']);
+            exit();
+        }
 
         $sql = "UPDATE productos SET Titulo=?, Descripcion=?, Catalogo=?, Cantidad=?, Precio=? WHERE ID_producto=?";
         $stmt = $conn->prepare($sql);
@@ -241,11 +275,11 @@ $conn->close();
                             <input type="hidden" id="editarId" name="editarId">
                             <div class="form-group">
                                 <label for="editarTitulo">Título:</label>
-                                <input type="text" class="form-control" id="editarTitulo" name="editarTitulo">
+                                <input type="text" class="form-control" id="editarTitulo" maxlength="20" name="editarTitulo">
                             </div>
                             <div class="form-group">
                                 <label for="editarDescripcion">Descripción:</label>
-                                <input type="text" class="form-control" id="editarDescripcion" name="editarDescripcion">
+                                <input type="text" class="form-control" id="editarDescripcion" maxlength="60" name="editarDescripcion">
                             </div>
                             <div class="form-group">
                                 <label for="editarCatalogo">Catálogo:</label>
@@ -257,11 +291,11 @@ $conn->close();
                             </div>
                             <div class="form-group">
                                 <label for="editarCantidad">Cantidad:</label>
-                                <input type="number" class="form-control" id="editarCantidad" name="editarCantidad">
+                                <input type="number" class="form-control" id="editarCantidad" maxlength="2" name="editarCantidad">
                             </div>
                             <div class="form-group">
                                 <label for="editarPrecio">Precio:</label>
-                                <input type="number" step="0.01" class="form-control" id="editarPrecio" name="editarPrecio">
+                                <input type="number" step="0.01" class="form-control" id="editarPrecio" maxlength="7" name="editarPrecio">
                             </div>
                             <button type="button" class="btn btn-primary" id="actualizarBtn">Actualizar</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -307,11 +341,21 @@ $conn->close();
                 var cantidad = $('#cantidad').val();
                 var precio = $('#precio').val();
 
-                if (!titulo || !descripcion || !catalogo || !cantidad || !precio) {
+                if (!titulo.trim() || !descripcion.trim() || !catalogo || !cantidad || !precio) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
                         text: 'Todos los campos son requeridos.'
+                    });
+                    return;
+                }
+              
+                const regexTituloDescripcion = /^[a-zA-Z\s]+$/;
+                if (!regexTituloDescripcion.test(titulo.trim()) || !regexTituloDescripcion.test(descripcion.trim())) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El título y la descripción solo pueden contener letras y espacios.'
                     });
                     return;
                 }
@@ -402,11 +446,21 @@ $conn->close();
                 var cantidad = $('#editarCantidad').val();
                 var precio = $('#editarPrecio').val();
 
-                if (!titulo || !descripcion || !catalogo || !cantidad || !precio) {
+                if (!titulo.trim() || !descripcion.trim() || !catalogo || !cantidad || !precio) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
                         text: 'Todos los campos son requeridos.'
+                    });
+                    return;
+                }
+              
+                const regexTituloDescripcion = /^[a-zA-Z\s]+$/;
+                if (!regexTituloDescripcion.test(titulo.trim()) || !regexTituloDescripcion.test(descripcion.trim())) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El título y la descripción solo pueden contener letras y espacios.'
                     });
                     return;
                 }

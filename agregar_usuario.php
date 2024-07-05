@@ -2,10 +2,20 @@
 ini_set("display_errors", E_ALL);
 require_once 'conexion_bd.php';
 
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    header('Location: registro.php');
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nombre = $_POST['usuario'];
-    $password = $_POST['contraseña'];
-    $correo = $_POST['correo'];
+    $nombre = filter_input(INPUT_POST, 'usuario', FILTER_SANITIZE_STRING);
+    $password = filter_input(INPUT_POST, 'contraseña', FILTER_SANITIZE_STRING);
+    $correo = filter_input(INPUT_POST, 'correo', FILTER_VALIDATE_EMAIL);
+
+    if (!$nombre || !$password || !$correo) {
+        echo "<script>alert('Datos de entrada inválidos.'); window.location.href = 'registro.php';</script>";
+        exit();
+    }
 
     // Verificar si el nombre de usuario o el correo electrónico ya existen
     $sql_verificar = $conn->prepare("SELECT * FROM usuarios WHERE Nombre = ? OR Correo = ?");
@@ -22,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql->bind_param("sssii", $nombre, $password, $correo, $saldoInicial, $esAdmin);
 
         if ($sql->execute() === TRUE) {
-            echo "<script>alert('REGISTRADO CORRECTAMENTE $nombre'); window.location.href = 'index.html';</script>";
+            echo "<script>alert('REGISTRADO CORRECTAMENTE $nombre'); window.location.href = 'index.php';</script>";
         } else {
             echo "Error: " . $sql->error;
         }

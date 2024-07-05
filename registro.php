@@ -1,9 +1,34 @@
+<?php
+session_start();
+
+if (isset($_SESSION['usuario'])) {
+    header('Location: inicio.php');
+    exit();
+}
+
+if (isset($_SESSION['administrador'])) {
+    header('Location: inicio_admin.php');
+    exit();
+}
+
+if (isset($_COOKIE['usuario'])) {
+    header('Location: inicio.php');
+    exit();
+}
+
+if (isset($_COOKIE['administrador'])) {
+    header('Location: inicio_admin.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro</title>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <style>
 body {
     display: flex;
@@ -96,17 +121,17 @@ button:hover {
             </tr>
             <tr>
                 <td><label for="correo">Correo Electrónico:</label></td>
-                <td><input type="email" id="correo" name="correo" required></td>
+                <td><input type="email" id="correo" name="correo" maxlength="30" required></td>
             </tr>
             <tr>
                 <td><label for="usuario">Usuario:</label></td>
-                <td><input type="text" id="usuario" name="usuario" required></td>
+                <td><input type="text" id="usuario" name="usuario" maxlength="10" required></td>
             </tr>
             <tr>
                 <td><label for="contraseña">Escoge una contraseña:</label></td>
                 <td>
                     <div class="contenedor-contraseña">
-                        <input type="password" id="contraseña" name="contraseña" required>
+                        <input type="password" id="contraseña" name="contraseña" maxlength="20" required>
                         <span class="alternar-contraseña" onclick="alternarContraseña()">
                             <img id="iconoAlternar" src="img/001-visibilidad.png" alt="Mostrar contraseña">
                         </span>
@@ -117,7 +142,7 @@ button:hover {
                 <td><label for="confirmar_contraseña">Vuelve a ingresar la contraseña:</label></td>
                 <td>
                     <div class="contenedor-contraseña">
-                        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
+                        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" maxlength="20" required>
                         <span class="alternar-contraseña" onclick="alternarContraseñaConfirmacion()">
                             <img id="iconoAlternarConfirmacion" src="img/001-visibilidad.png" alt="Mostrar contraseña">
                         </span>
@@ -131,12 +156,17 @@ button:hover {
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <p>¿Ya tienes una cuenta? <a href="index.html">Ingresa aquí</a></p>
+                    <p>¿Ya tienes una cuenta? <a href="index.php">Ingresa aquí</a></p>
                 </td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
                     <p class="error" id="errorContraseña">Las contraseñas no coinciden.</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <p class="error" id="errorContraseñaEspacios">La contraseña no puede contener espacios en blanco.</p>
                 </td>
             </tr>
         </table>
@@ -175,15 +205,61 @@ button:hover {
             const contraseña = document.getElementById('contraseña').value;
             const confirmarContraseña = document.getElementById('confirmar_contraseña').value;
             const errorContraseña = document.getElementById('errorContraseña');
+            const errorContraseñaEspacios = document.getElementById('errorContraseñaEspacios');
 
+
+            // Sanitizar la entrada del usuario
+            const usuario = document.getElementById('usuario').value.trim();
+            const correo = document.getElementById('correo').value.trim();
+
+            // Verificar si el usuario o el correo están vacíos
+            if (usuario === '' || correo === '') {
+                swal('Error', 'El nombre de usuario y el correo electrónico son obligatorios.', 'error');
+                return false;
+            }
+
+            // Verificar si el nombre de usuario contiene caracteres especiales o números
+            const regexUsuario = /^[a-zA-Z]+$/;
+            if (!regexUsuario.test(usuario)) {
+                swal('Error', 'El nombre de usuario solo puede contener letras.', 'error');
+                return false;
+            }
+
+            // Verificar si las contraseñas coinciden
             if (contraseña !== confirmarContraseña) {
                 errorContraseña.style.display = 'block';
+                swal('Error', 'Las contraseñas no coinciden.', 'error');
                 return false;
             } else {
                 errorContraseña.style.display = 'none';
-                return true;
             }
+          
+            // Verificar si la contraseña contiene espacios en blanco
+            if (/\s/.test(contraseña)) {
+                errorContraseñaEspacios.style.display = 'block';
+                swal('Error', 'La contraseña no puede contener espacios en blanco.', 'error');
+                return false;
+            } else {
+                errorContraseñaEspacios.style.display = 'none';
+            }
+          
+            return true;
         }
+    </script>
+    <script>
+        document.onkeydown = function(e) {
+            if ((e.ctrlKey && 
+                (e.keyCode === 85 || // Ctrl+U
+                e.keyCode === 117)) || // Ctrl+F6
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                e.keyCode === 123) { // F12
+                return false;
+            }
+        };
+
+        document.oncontextmenu = function(e) {
+    		e.preventDefault();
+        };
     </script>
 </body>
 </html>

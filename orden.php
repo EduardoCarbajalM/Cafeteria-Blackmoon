@@ -1,6 +1,30 @@
 <?php
 include 'conexion_bd.php';
 
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    header('Location: index.php');
+    exit();
+}
+
+// Cerrar sesión
+if (isset($_GET['cerrar_sesion'])) {
+    $_SESSION = array();
+    
+    session_unset();
+    session_destroy();
+    
+    if (isset($_COOKIE['usuario'])) {
+        setcookie('usuario', '', time() - 3600, '/');
+    }
+    
+    if (isset($_COOKIE['administrador'])) {
+        setcookie('administrador', '', time() - 3600, '/');
+    }
+    
+    header('Location: index.php');
+    exit();
+}
+
 // Generar un número de ticket aleatorio de máximo 9 números
 function generarNumeroTicket() {
     return rand(100000000, 999999999);
@@ -20,7 +44,17 @@ foreach ($carrito as $producto) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'comprar') {
     // Obtener el nombre del usuario (suponiendo que está almacenado en una variable de sesión)
     session_start();
-    $nombreUsuario = $_SESSION['usuario'];
+    $nombreUsuario = '';
+    if (isset($_SESSION['usuario'])) {
+        $nombreUsuario = $_SESSION['usuario'];
+    } elseif (isset($_COOKIE['usuario'])) {
+        $nombreUsuario = $_COOKIE['usuario'];
+    }
+
+    if ($nombreUsuario === '') {
+        echo '<script>alert("No se pudo obtener la información del usuario."); window.location.href = "?cerrar_sesion=1";</script>';
+        exit;
+    }
 
     // Obtener el saldo del usuario
     $query_saldo = "SELECT saldo FROM usuarios WHERE Nombre = ?";
@@ -70,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
         // Cerrar la conexión
         $conn->close();
 
-        echo '<script>alert("Compra realizada con éxito!"); window.location.href = "inicio.html";</script>';
+        echo '<script>alert("Compra realizada con éxito!"); window.location.href = "inicio.php";</script>';
         exit;
     } else {
         echo '<script>alert("Saldo insuficiente para realizar la compra."); window.location.href = "menu.php";</script>';

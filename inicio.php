@@ -1,5 +1,30 @@
 <?php
-require_once('cookiees_usuario.php');
+session_start();
+
+// Verificar si no hay cookie ni sesión de usuario activa
+if (!isset($_COOKIE['usuario']) && !isset($_SESSION['usuario'])) {
+    header('Location: index.php');
+    exit();
+}
+
+// Cerrar sesión
+if (isset($_GET['cerrar_sesion'])) {
+    $_SESSION = array();
+    
+    session_unset();
+    session_destroy();
+    
+    if (isset($_COOKIE['usuario'])) {
+        setcookie('usuario', '', time() - 3600, '/');
+    }
+    
+    if (isset($_COOKIE['administrador'])) {
+        setcookie('administrador', '', time() - 3600, '/');
+    }
+    
+    header('Location: index.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,14 +64,14 @@ require_once('cookiees_usuario.php');
         }
     </style>
 </head>
-<body>
+<body onload="inicializarPagina()">
     <header class="bg-light p-3 mb-4 d-flex justify-content-between align-items-center">
         <img src="img/usuario.png" alt="mini menu usuario" class="rounded-circle">
         <nav>
             <a class="mx-2" href="inicio.php">Inicio</a>
             <a class="mx-2" href="menu.php">Menús</a>
             <a class="mx-2" href="promos.php">Promos</a>
-            <a class="mx-2" href="#" id="logout">Cerrar Sesión</a>
+            <a class="mx-2" href="?cerrar_sesion=1" id="cerrar-sesion">Cerrar Sesión</a>
         </nav>
     </header>
     
@@ -80,10 +105,32 @@ require_once('cookiees_usuario.php');
             </div>
         </div>
     </div>
+      <script>
+        function inicializarPagina() {
+            const iconoAlternar = document.getElementById('iconoAlternar');
+            iconoAlternar.src = 'img/001-visibilidad.png';
+            iconoAlternar.alt = 'Mostrar contraseña';
+
+            document.onkeydown = function(e) {
+                if ((e.ctrlKey && 
+                    (e.keyCode === 85 || // Ctrl+U
+                    e.keyCode === 117)) || // Ctrl+F6
+                    (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                    e.keyCode === 123) { // F12
+                    swal("Deja de intentar robar puntos, pareces muerto de hambre");
+                    return false;
+                }
+            };
+
+            document.oncontextmenu = function(e) {
+                swal("Deja de intentar robar puntos, pareces muerto de hambre");
+                return false;
+            };
+        }
+  	</script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 <script src="minimenu.js"></script>
-<script src="cerrarsesion.js"></script>
 </html>
