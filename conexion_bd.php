@@ -14,11 +14,11 @@ if ($conn->connect_error) {
 /*
 Conexion en hosting
 ini_set("display_errors",E_ALL);
-$servername = "db5016002676.hosting-data.io"; // Nombre de host
+$servername = "db5016009403.hosting-data.io"; // Nombre de host
 $port = "3306"; // Puerto
-$username = "dbu402379"; // Nombre de usuario de la base de datos
-$password = "Politecnico.01"; // Contraseña de la base de datos
-$dbname = "dbs13040412"; // Nombre de tu base de datos
+$username = "dbu4369946"; // Nombre de usuario de la base de datos
+$password = "ipn.2023600613"; // Contraseña de la base de datos
+$dbname = "dbs13045012"; // Nombre de tu base de datos
 
 // Crear la conexión
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
